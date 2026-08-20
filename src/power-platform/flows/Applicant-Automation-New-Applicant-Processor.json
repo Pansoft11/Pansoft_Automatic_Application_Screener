@@ -1,0 +1,89 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "triggers": {
+    "When_a_new_email_arrives": {
+      "type": "ApiConnectionWebhook",
+      "kind": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['office365']['connectionId']"
+          }
+        },
+        "parameters": {
+          "folderId": "@variables('OUTLOOK_FOLDER_ID')",
+          "includeAttachments": true,
+          "mailFolderType": "mailFolder",
+          "subscribeToAllFolders": false
+        },
+        "authentication": {
+          "type": "Raw",
+          "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))"
+        }
+      }
+    }
+  },
+  "actions": {
+    "Initialize_Message_ID": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [
+          {
+            "name": "MessageID",
+            "type": "String",
+            "value": "@triggerOutputs()?['body/messageId']"
+          }
+        ]
+      }
+    },
+    "Get_Email_Raw_Data": {
+      "type": "Http",
+      "inputs": {
+        "method": "GET",
+        "uri": "https://graph.microsoft.com/v1.0/me/messages/@{triggerBody()?['id']}?$select=id,subject,receivedDateTime,body,bodyPreview,hasAttachments,from,sender,webLink,attachments",
+        "authentication": {
+          "type": "ManagedServiceIdentity"
+        }
+      }
+    },
+    "Condition_Validate_Folder": {
+      "type": "If",
+      "expression": {
+        "equals": [
+          "@triggerOutputs()?['body/folderId']",
+          "@variables('OUTLOOK_FOLDER_ID')"
+        ]
+      },
+      "actions": {
+        "Extract_Applicant_Data": {
+          "type": "Compose",
+          "description": "Design-time marker: replace with Excel Online Run script (ProcessApplicant), then Run script (UpsertApplicant), after tenant binding.",
+          "inputs": {
+            "messageJson": "@string(outputs('Get_Email_Raw_Data')?['body'])",
+            "flowName": "Applicant Automation - New Applicant Processor"
+          }
+        }
+      },
+      "else": {
+        "actions": [
+          {
+            "type": "Terminate",
+            "name": "Skip_Outside_Folder",
+            "inputs": {
+              "runStatus": "Succeeded",
+              "runStatusReason": "Message outside configured folder"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

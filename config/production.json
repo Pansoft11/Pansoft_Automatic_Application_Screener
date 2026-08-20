@@ -1,0 +1,36 @@
+{
+  "environment": "production",
+  "outlook": {
+    "folderName": "Recruiting/Applicants",
+    "folderId": "",
+    "processFutureEmails": true,
+    "allowedMailFolderPath": "Inbox/Recruiting/Applicants"
+  },
+  "excel": {
+    "filePath": "<YOUR-ONEDRIVE-OR-SHAREPOINT-WORKBOOK-URL>",
+    "tableName": "Applicants",
+    "messagesTableName": "ApplicantMessages",
+    "processingLogTableName": "ProcessingLog",
+    "workbookName": "Applicant_Automation.xlsx"
+  },
+  "duplicate": {
+    "primaryKey": "normalizedEmail",
+    "secondaryKey": "nameAndSubjectSimilarity"
+  },
+  "processing": {
+    "pageSize": 100,
+    "maxConcurrency": 1,
+    "retryPolicy": {
+      "maxRetries": 3,
+      "retryIntervalSeconds": 15
+    },
+    "throttleProtection": true,
+    "historicalImport": true,
+    "enableNewEmailTrigger": false
+  },
+  "resumeParsing": {
+    "enabled": false,
+    "service": "Azure AI Document Intelligence (optional)",
+    "fallbackBehavior": "Leave fields blank and set ScreeningNotes = 'Resume parsing unavailable'"
+  }
+}

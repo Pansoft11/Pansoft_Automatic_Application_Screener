@@ -1,0 +1,7 @@
+{
+  "name": "shared_office365users",
+  "displayName": "Office 365 Users",
+  "connectionName": "shared_office365users",
+  "connectionType": "shared_office365users",
+  "description": "Connection for reading Outlook folder metadata and user profile data."
+}

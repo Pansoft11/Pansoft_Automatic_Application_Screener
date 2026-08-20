@@ -1,0 +1,56 @@
+{
+  "name": "ApplicantAutomation",
+  "publisher": "org",
+  "displayName": "Applicant Automation",
+  "description": "Environment variables for applicant extraction automation.",
+  "variables": [
+    {
+      "name": "OUTLOOK_FOLDER_NAME",
+      "type": "string",
+      "defaultValue": "Recruiting/Applicants",
+      "displayName": "Outlook Folder Name"
+    },
+    {
+      "name": "OUTLOOK_FOLDER_ID",
+      "type": "string",
+      "defaultValue": "",
+      "displayName": "Outlook Folder ID"
+    },
+    {
+      "name": "EXCEL_FILE_PATH",
+      "type": "string",
+      "defaultValue": "",
+      "displayName": "Excel File Path"
+    },
+    {
+      "name": "EXCEL_TABLE_NAME",
+      "type": "string",
+      "defaultValue": "Applicants",
+      "displayName": "Excel Table Name"
+    },
+    {
+      "name": "EMAIL_CAMPAIGN_NAME",
+      "type": "string",
+      "defaultValue": "Applicant Campaign",
+      "displayName": "Email Campaign Name"
+    },
+    {
+      "name": "SELECTION_THRESHOLD",
+      "type": "number",
+      "defaultValue": 80,
+      "displayName": "Selection Threshold"
+    },
+    {
+      "name": "SCREENING_FORM_URL",
+      "type": "string",
+      "defaultValue": "https://form.example.com/your-screening-form",
+      "displayName": "Screening Form URL"
+    },
+    {
+      "name": "EMAIL_SEND_DELAY_SECONDS",
+      "type": "number",
+      "defaultValue": 5,
+      "displayName": "Email Send Delay Seconds"
+    }
+  ]
+}

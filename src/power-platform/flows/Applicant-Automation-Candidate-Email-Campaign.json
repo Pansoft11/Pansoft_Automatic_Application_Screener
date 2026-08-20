@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "artifactType": "design-reference",
+  "warning": "Create this as a solution-aware Power Automate flow and bind tenant-owned connection, workbook, and Office Script IDs. This file is not directly importable.",
+  "name": "Applicant Automation - Candidate Email Campaign",
+  "trigger": "Manually trigger a flow",
+  "inputs": {
+    "SendMode": ["TEST", "SELECTED", "REJECTED"],
+    "Confirmation": "Required exact value CONFIRM SEND",
+    "TestRecipient": "Required by the run form and used only in TEST mode; production candidates are never used as test recipients",
+    "TestCandidateEmail": "Required by the run form; identifies the Applicants row used by TEST mode and is ignored in production modes"
+  },
+  "dataSource": {
+    "connector": "Excel Online (Business)",
+    "table": "Applicants",
+    "pagination": true,
+    "paginationThreshold": 5000
+  },
+  "classification": {
+    "selected": "InitialScreeningScore >= SELECTION_THRESHOLD",
+    "rejected": "InitialScreeningScore < SELECTION_THRESHOLD",
+    "manualReview": "InitialScreeningScore is blank; do not send",
+    "nullSafety": "Reject empty TEST inputs; coalesce and trim email values; coalesce SendMode, InitialScreeningScore, and EmailLog fields before conversions because Power Automate predicates do not short-circuit reliably"
+  },
+  "safety": {
+    "applyToEachConcurrency": 1,
+    "delaySeconds": "EMAIL_SEND_DELAY_SECONDS",
+    "duplicateKey": "Campaign + CandidateID + EmailType",
+    "reserveScript": "ReserveCandidateEmail",
+    "finalizeScript": "FinalizeCandidateEmail",
+    "bulkRequiresTestValidation": true
+  },
+  "send": {
+    "provider": "Office 365 Outlook",
+    "selectedSubject": "AI/ML Internship – Selected for Next Round",
+    "rejectedSubject": "AI/ML Internship – Initial Screening Update",
+    "selectedIncludesScreeningForm": true,
+    "rejectedIncludesScreeningForm": false,
+    "createDraftThenSend": true,
+    "storeProviderMessageId": true
+  }
+}

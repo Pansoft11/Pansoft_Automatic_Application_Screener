@@ -1,0 +1,28 @@
+out/
+*.zip
+*.tmp
+*.log
+.vscode/settings.json.user
+
+# Never publish tenant-bound Power Platform exports or authentication state.
+.pac/
+.powerplatform/
+authprofiles.json
+out-canonical-review/
+tenant-export/
+solution-export/
+*.msapp
+
+# Workbooks and run outputs may contain applicant personal data.
+*.xlsx
+*.xlsm
+*.xlsb
+run-history/
+exports/
+
+# Local configuration may contain tenant URLs, folder IDs, or resource IDs.
+config/*.local.json
+config/*.private.json
+.env
+.env.*
+!.env.example

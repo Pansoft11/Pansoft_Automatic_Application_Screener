@@ -1,0 +1,29 @@
+<ImportExportXml>
+  <SolutionManifest>
+    <UniqueName>ApplicantAutomation</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Applicant Automation" languagecode="1033" />
+    </LocalizedNames>
+    <Publisher>
+      <UniqueName>org</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Applicant Automation Publisher" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Publisher for Applicant Automation" languagecode="1033" />
+      </Descriptions>
+      <Address>
+        <Street1></Street1>
+        <City></City>
+        <StateOrProvince></StateOrProvince>
+        <PostalCode></PostalCode>
+        <CountryOrRegion>US</CountryOrRegion>
+      </Address>
+    </Publisher>
+    <Version>1.0.0.0</Version>
+    <Managed>0</Managed>
+    <Description>Organization-neutral applicant extraction and communication automation.</Description>
+    <RootComponents />
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>

@@ -1,0 +1,7 @@
+{
+  "name": "shared_excelonlinebusiness",
+  "displayName": "Excel Online (Business)",
+  "connectionName": "shared_excelonlinebusiness",
+  "connectionType": "shared_excelonlinebusiness",
+  "description": "Connection for reading and writing the applicants workbook in OneDrive or SharePoint."
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Http",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    }
+  },
+  "actions": {
+    "Initialize_Processing_Log_Array": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [
+          {
+            "name": "ProcessingLog",
+            "type": "Array",
+            "value": []
+          }
+        ]
+      },
+      "runAfter": {}
+    },
+    "Get_Folder": {
+      "type": "Http",
+      "inputs": {
+        "method": "GET",
+        "uri": "https://graph.microsoft.com/v1.0/me/mailFolders",
+        "authentication": {
+          "type": "ManagedServiceIdentity"
+        }
+      },
+      "runAfter": {
+        "Initialize_Processing_Log_Array": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Apply_to_each_folder": {
+      "type": "Foreach",
+      "foreach": "@outputs('Get_Folder')?['body/value']",
+      "actions": {
+        "Condition_Folder_Match": {
+          "type": "If",
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@item()?['displayName']",
+                  "@variables('OUTLOOK_FOLDER_NAME')"
+                ]
+              }
+            ]
+          },
+          "actions": {
+            "Set_Folder_ID": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "OUTLOOK_FOLDER_ID",
+                "value": "@item()?['id']"
+              }
+            }
+          },
+          "else": {
+            "actions": []
+          }
+        }
+      },
+      "runAfter": {
+        "Get_Folder": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Get_Emails_Paginated": {
+      "type": "Http",
+      "inputs": {
+        "method": "GET",
+        "uri": "https://graph.microsoft.com/v1.0/me/mailFolders/@{variables('OUTLOOK_FOLDER_ID')}/messages?$top=100",
+        "authentication": {
+          "type": "ManagedServiceIdentity"
+        }
+      },
+      "runAfter": {
+        "Apply_to_each_folder": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Apply_to_each_email": {
+      "type": "Foreach",
+      "foreach": "@outputs('Get_Emails_Paginated')?['body/value']",
+      "actions": {
+        "Get_Full_Email": {
+          "type": "Http",
+          "inputs": {
+            "method": "GET",
+            "uri": "https://graph.microsoft.com/v1.0/me/messages/@{items('Apply_to_each_email')?['id']}?$select=id,subject,receivedDateTime,sender,body,bodyPreview,hasAttachments,webLink,from,conversationId,attachments",
+            "authentication": {
+              "type": "ManagedServiceIdentity"
+            }
+          }
+        },
+        "Condition_Has_Attachment": {
+          "type": "If",
+          "expression": {
+            "equals": [
+              "@outputs('Get_Full_Email')?['body/hasAttachments']",
+              true
+            ]
+          },
+          "actions": {
+            "Get_Attachments": {
+              "type": "Http",
+              "inputs": {
+                "method": "GET",
+                "uri": "https://graph.microsoft.com/v1.0/me/messages/@{items('Apply_to_each_email')?['id']}/attachments",
+                "authentication": {
+                  "type": "ManagedServiceIdentity"
+                }
+              }
+            }
+          },
+          "else": {
+            "actions": []
+          }
+        },
+        "Extract_Applicant_Data": {
+          "type": "Compose",
+          "description": "Design-time marker: replace with Excel Online Run script (ProcessApplicant), then Run script (UpsertApplicant), after tenant binding.",
+          "inputs": {
+            "messageJson": "@string(outputs('Get_Full_Email')?['body'])",
+            "flowName": "Applicant Automation - Historical Applicant Import"
+          }
+        }
+      },
+      "runAfter": {
+        "Get_Emails_Paginated": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

@@ -1,0 +1,26 @@
+{
+  "name": "ApplicantAutomation",
+  "publisherPrefix": "org",
+  "displayName": "Applicant Automation",
+  "version": "1.0.0.0",
+  "description": "Solution to extract and process AI/ML applicant emails from Outlook and write to Excel.",
+  "environmentVariables": [
+    "OUTLOOK_FOLDER_NAME",
+    "OUTLOOK_FOLDER_ID",
+    "EXCEL_FILE_PATH",
+    "EXCEL_TABLE_NAME"
+  ],
+  "flows": [
+    "Applicant Automation - Historical Applicant Import",
+    "Applicant Automation - New Applicant Processor",
+    "Applicant Automation - Candidate Email Campaign"
+  ],
+  "officeScripts": [
+    "ProcessApplicant.ts",
+    "UpsertApplicant.ts",
+    "ValidateApplicants.ts",
+    "ReserveCandidateEmail.ts",
+    "FinalizeCandidateEmail.ts",
+    "LogProcessingError.ts"
+  ]
+}
